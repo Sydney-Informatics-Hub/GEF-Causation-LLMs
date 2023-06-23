@@ -1,0 +1,8 @@
+.venv
+.idea
+
+.secrets
+**/.ipynb_checkpoints
+
+
+**/__pycache__
