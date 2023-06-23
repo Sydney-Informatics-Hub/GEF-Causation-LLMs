@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "causation"
+version = "0.1.0"
+description = "using langchain for genetic causation bias classification project"
+authors = ["Your Name <you@example.com>"]
+license = "MIT"
+packages = [{ include = "causation" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+urllib3 = "^1.26.6"
+llm_experiments = { git = "git@github.com:Sydney-Informatics-Hub/llm-experiments.git", rev = "1ccf1f1a0a883f0e2d032f0016904f2605621a49" }
+pandas = "^2.0.2"
+openai = "^0.27.8"
+openpyxl = "^3.1.2"
+scikit-learn = "^1.2.2"
+spacy = "^3.5.3"
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl" }
+panel = "^1.1.0"
+
+[tool.poetry.group.dev.dependencies]
+jupyterlab = "<4.0"
+jupyterlab-vim = "^0.16.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
