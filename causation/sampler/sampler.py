@@ -23,15 +23,13 @@ Clustering:
     - gaussian mixture models (GMMs)
     - spectral clustering
 """
-import time
+import sys
 from sklearn.cluster import KMeans
-from sklearn import datasets
 import numpy as np
 import pandas as pd
-from tqdm.auto import tqdm
-from typing import Callable, Any
+from typing import Callable, Any, Optional, Union
 from collections import namedtuple
-from functools import partial
+from copy import deepcopy
 from collections.abc import Hashable
 import spacy
 
@@ -50,12 +48,12 @@ Embedding_Types = ('spacy_en_core_web_sm',)  # 'bert'
 # Cluster for one class
 def kmeans_cluster(embs: np.ndarray, n_clusters: int, seed: int = 42, **kwargs) -> CLUSTER_RESULTS:
     """ Cluster the embeddings using kmeans and return a dictionary of cluster -> list of indices."""
-    if not isinstance(embs, EMBEDDINGS): raise TypeError("embs must be np.ndarray.")
-    if not isinstance(n_clusters, int): raise TypeError("n_clusters must be an integer.")
-    if not n_clusters > 0: raise ValueError("n_clusters must be > 0.")
-    if not isinstance(seed, int): raise TypeError("seed must be an integer.")
+    if not isinstance(embs, EMBEDDINGS): raise TypeError("req: embs must be np.ndarray.")
+    if not isinstance(n_clusters, int): raise TypeError("req: n_clusters must be an integer.")
+    if not n_clusters > 0: raise ValueError("req: n_clusters must be > 0.")
+    if not isinstance(seed, int): raise TypeError("opt: seed must be an integer.")
 
-    kmeans = KMeans(n_clusters=3, random_state=seed, **kwargs)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=seed, **kwargs)
 
     from sklearn import preprocessing
     embs = preprocessing.normalize(embs)  # normalise for cosine similarity
@@ -79,96 +77,143 @@ def embed_spacy_en_core_web_sm(texts: list[str]) -> EMBEDDINGS:
     return embeddings
 
 
-ARTIFACTS = namedtuple('ARTIFACT', ['dataframe', 'embeddings', 'clusters'])
+ARTIFACTS = namedtuple('ARTIFACT', ['dataframe', 'col_clazz', 'col_text', 'embeddings'])
 
 
 class Sampler(object):
     Clustering_Strategies = Clustering_Strategies
     Embedding_Types = Embedding_Types
 
-    def __init__(self, clustering_strategy: str, embedding_type: str):
-        if not clustering_strategy in Clustering_Strategies:
-            raise ValueError(f"clustering_strategy must be one of {', '.join(Clustering_Strategies)}")
+    def __init__(self, embedding_type: str, clustering_strategy: str, n_clusters: Optional[int] = None):
         if not embedding_type in Embedding_Types:
             raise ValueError(f"embedding_type must be one of {', '.join(Embedding_Types)}")
+        if not clustering_strategy in Clustering_Strategies:
+            raise ValueError(f"clustering_strategy must be one of {', '.join(Clustering_Strategies)}")
+        if n_clusters is not None and not isinstance(n_clusters, int):
+            raise TypeError("n_clusters must be an integer.")
 
         self.clustering_strategy = clustering_strategy
+        self.n_clusters = n_clusters
         self.embedding_type = embedding_type
 
-        self.artifacts: ARTIFACTS = None
+        self.artifacts: Optional[ARTIFACTS] = None
 
     def initialise(self, df: pd.DataFrame, col_clazz: str, col_text: str, verbose: bool = False) -> ARTIFACTS:
         """ Instantiates the Sampler with your text dataset by running clustering per class. """
-        if col_clazz not in df.columns: raise ValueError(f"{col_clazz=} is not one of the columns")
-        if col_text not in df.columns: raise ValueError(f"{col_text=} is not one of the columns")
+        if col_clazz not in df.columns: raise ValueError(f"{col_clazz=} is not one of the columns.")
+        if col_text not in df.columns: raise ValueError(f"{col_text=} is not one of the columns.")
 
         if verbose:
             print(f"Clustering strategy: {self.clustering_strategy}")
+            print(f"Number of clusters: {self.n_clusters}")
             print(f"Embedding type: {self.embedding_type}")
 
         emb_fn: Callable[[list[str]], EMBEDDINGS] = embed_spacy_en_core_web_sm
         cluster_fn: Callable[[EMBEDDINGS, Any], CLUSTER_RESULTS] = kmeans_cluster
 
         clazzes = list(df.loc[:, col_clazz].unique())
-        if verbose:
-            print(f"Classes: {', '.join(clazzes)}")
+        if verbose: print(f"Classes: {', '.join(clazzes)}")
 
         embeddings: EMBEDDINGS = emb_fn(df.loc[:, col_text].tolist())
 
         # Generate clusters
-        clazz_cresults = dict()
-        if verbose: print("Generating clusters...")
+        if verbose: print("Generating clusters...", end='')
         # noinspection PyTypeChecker
-        for clazz, group in tqdm(df.loc[:, [col_clazz, col_text]].groupby(by=col_clazz),
-                                 colour='orange',
-                                 total=len(clazzes)):
-            cresults: CLUSTER_RESULTS = cluster_fn(embeddings, n_clusters=5)  # todo: infer cluster size
-            clazz_cresults[clazz] = cresults
+        clusters: CLUSTER_RESULTS = cluster_fn(embeddings, n_clusters=self.n_clusters)
+        if verbose: print("Done.", end='\n')
 
-        self.artifacts = ARTIFACTS(dataframe=df, embeddings=embeddings, clusters=clazz_cresults)
-        if verbose: print("Done.")
-        return ARTIFACTS(dataframe=df, embeddings=embeddings, clusters=clazz_cresults)  # separate reference
+        remapped_clusters: list[tuple[int, Hashable]] = [(df.iloc[idx].name, cluster)
+                                                         for cluster, indices in clusters.items()
+                                                         for idx in indices]
 
-    def sample(self, n: int) -> pd.DataFrame:
+        cdf = pd.DataFrame(remapped_clusters, columns=['idx', 'cluster']).set_index(keys='idx')
+        df = pd.concat([df, cdf], axis=1)
+
+        # note: return class information, number of clusters, indices in each cluster, embeddings, dataframe.
+        self.artifacts = ARTIFACTS(dataframe=df, embeddings=embeddings,
+                                   col_clazz=col_clazz, col_text=col_text)
+        return deepcopy(self.artifacts)
+
+    def sample(self, n: int, clazz_weights: Optional[list[Union[int, float]]] = None,
+               with_replacement: bool = False,
+               verbose: bool = False) -> pd.DataFrame:
+        """ Sample from the dataset and return a subset of the dataset as a dataframe."""
         if not isinstance(n, int): raise TypeError("n must be an integer.")
-        if not n > 0: raise ValueError("n must be > 0.")
+        if n <= 0: raise ValueError("n must be > 0.")
         assert self.artifacts is not None, "Please first call the initialise() method to initialise the sampler."
+        if n > len(self.artifacts.dataframe):
+            raise ValueError(f"n must be <= {len(self.artifacts.dataframe)} (size of dataset)")
 
         # obtain class weights for representative sample
-        clazzes = list(self.artifacts.clusters.keys())
-        clazz_weights = np.zeros(shape=(len(clazzes),))
-        for i, clazz in enumerate(clazzes):
-            weight = 0
-            for indices in self.artifacts.clusters.get(clazz).values():
-                weight += sum(indices)
-            clazz_weights[i] = weight
+        clazz_dist = self.artifacts.dataframe.loc[:, self.artifacts.col_clazz].value_counts()
+        clazzes = clazz_dist.index.tolist()
+        if verbose: print(f"Classes: {', '.join(clazzes)}")
 
-        sample_pool_size = sum(clazz_weights)
-        if not n < sample_pool_size:
-            raise ValueError(f"n must be smaller than sampling pool. Pool size: {sample_pool_size}")
+        if clazz_weights is None:
+            # retain class distribution of the dataset.
+            clazz_weights = clazz_dist.values
+        else:
+            if not isinstance(clazz_weights, list): raise TypeError("clazz_weights must be a list.")
+            if not len(clazz_weights) > 0: raise ValueError("clazz_weights must not be empty.")
+            if len(clazz_weights) != len(clazzes):
+                raise ValueError("Mismatched number of classes in clazz_weights than in dataset.")
 
         # convert to probability weights
-        clazz_weights = clazz_weights / sum(clazz_weights)
-        assert sum(clazz_weights), "Class weights do not sum to 1. Nuh way... This is a bug. Sorry! hahaha contact me."
+        clazz_weights = np.array(clazz_weights) / sum(clazz_weights)
+        assert sum(clazz_weights) == 1.0, \
+            "Class weights do not sum to 1. Nuh way... This is a bug. Sorry! hahaha contact me."
+        if verbose: print(f"Normalised class weights: {clazz_weights}")
 
-        # sample a set of indices per class.
-        sample_indices = list()
-        for i in range(n):
-            clazz = np.random.choice(clazzes, p=clazz_weights)
-            clusters = self.artifacts.clusters.get(clazz)
-            # uniformly sample from one of the clusters.
-            cluster_name = np.random.choice(len(clusters.keys()))
-            indices = clusters.get(cluster_name)
-            idx = indices.pop(np.random.choice(len(indices)))
-            sample_indices.append(idx)
+        # calculate number of examples per class
+        num_examples_per_clazz: dict[str, int] = {
+            c: clazz_weights[i] * n for (i, c) in enumerate(clazzes)
+        }
+        assert sum(num_examples_per_clazz.values()) == n, \
+            "Number of target examples to accumulate per class should equal sample size. "
+        num_examples_per_clazz = dict(zip(
+            num_examples_per_clazz.keys(),
+            map(lambda n: int(n), num_examples_per_clazz.values()))
+        )
+        if verbose: print(f"Target number of examples per class:\n{num_examples_per_clazz}")
 
-        # align sampled indices with dataframe's index.
-        remapped_indices = [self.artifacts.dataframe.iloc[i].name for i in sample_indices]
-        return self.artifacts.dataframe.loc[remapped_indices]
+        clazz_indices = {clazz: set() for clazz in clazzes}
+        df = pd.DataFrame(self.artifacts.dataframe, index=self.artifacts.dataframe.index)
+        for clazz, group in df.groupby(by=self.artifacts.col_clazz):
+            groups = list(group.groupby(by='cluster'))
+            num_sampled = 0
+            target_num_sampled = num_examples_per_clazz.get(clazz)
+            while num_sampled < target_num_sampled:
+                exhausted_cluster_counter = 0
+                for cluster, group in groups:
+                    if num_sampled >= num_examples_per_clazz.get(clazz):
+                        continue
+                    sampled_indices = clazz_indices.get(clazz)
+                    indices = group.index.to_list()
+                    if not with_replacement:
+                        while True:
+                            if len(indices) <= 0:
+                                exhausted_cluster_counter += 1
+                                break
+                            idx = indices.pop(np.random.choice(len(indices)))
+                            if idx not in sampled_indices:
+                                sampled_indices.add(idx)
+                                break
+                    else:
+                        idx = np.random.choice(indices)
+                        sampled_indices.add(idx)
+
+                    num_sampled = len(sampled_indices)
+                if exhausted_cluster_counter >= len(groups):
+                    print(f"Exhausted all clusters when sampling for class: {clazz}. "
+                          f"Capped at {num_sampled}/{target_num_sampled} samples.",
+                          file=sys.stderr)
+                    break
+        sampled_indices = [idx for indices_for_clazz in clazz_indices.values() for idx in indices_for_clazz]
+        return self.artifacts.dataframe.loc[sampled_indices]
 
 
 if __name__ == '__main__':
-    sampler = Sampler(clustering_strategy='kmeans', embedding_type='spacy_en_core_web_sm')
+    sampler = Sampler(clustering_strategy='kmeans', n_clusters=5, embedding_type='spacy_en_core_web_sm')
 
     clazzes = [0, 1, 1, 1, 0, 0, 1, 0, 1, 1]
     texts = [
