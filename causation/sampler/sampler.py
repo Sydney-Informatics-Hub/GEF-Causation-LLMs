@@ -32,6 +32,10 @@ from collections import namedtuple
 from copy import deepcopy
 from collections.abc import Hashable
 import spacy
+from sklearn.preprocessing import LabelEncoder
+from sklearn.manifold import TSNE
+import umap
+import plotly.graph_objects as go
 
 __all__ = ['Sampler']
 
@@ -40,9 +44,6 @@ CLUSTER_NAME = Hashable
 CLUSTER_RESULTS = dict[CLUSTER_NAME, list[INDEX]]
 
 EMBEDDINGS = np.ndarray
-
-Clustering_Strategies = ('kmeans',)
-Embedding_Types = ('spacy_en_core_web_sm',)  # 'bert'
 
 
 # Cluster for one class
@@ -229,6 +230,45 @@ class Sampler(object):
                     break
         sampled_indices = [idx for indices_for_clazz in clazz_indices.values() for idx in indices_for_clazz]
         return self.artifacts.dataframe.loc[sampled_indices]
+
+    def visualise(self, kind: str = 'umap'):
+        assert self.artifacts is not None, "Please first call the initialise() method to initialise the sampler."
+        if kind.upper() == 'UMAP':
+            compressed_2d = self.umap(self.artifacts.embeddings)
+        elif kind.upper() == 'TSNE':
+            compressed_2d = self.tsne(self.artifacts.embeddings)
+        else: raise NotImplementedError(f"kind = {kind} is not supported. Only umap, tsne are.")
+        # set up visualisation plot
+        labels = self.artifacts.dataframe.loc[:, self.artifacts.col_clazz].to_list()
+        lab_encodings = LabelEncoder().fit_transform(labels)
+        texts = self.artifacts.dataframe.loc[:, [self.artifacts.col_clazz, self.artifacts.col_text]].apply(
+            lambda row: f"[{row.clazz}] {row.sentence}", axis=1)
+        fig = go.Figure(data=go.Scatter(
+            x=compressed_2d[:, 0],
+            y=compressed_2d[:, 1],
+            mode='markers',
+            marker=dict(
+                size=8,
+                color=lab_encodings,  # assign color to each label
+                colorscale='Viridis',  # choose a colorscale
+                opacity=0.8
+            ),
+            text=texts,
+        ))
+        fig.update_layout(autosize=False, width=800, height=800)
+        fig.show()
+
+    @staticmethod
+    def umap(embeddings):
+        reducer = umap.UMAP(random_state=42)
+        embeddings_2d = reducer.fit_transform(embeddings)
+        return embeddings_2d
+
+    @staticmethod
+    def tsne(embeddings):
+        tsne = TSNE(n_components=2, random_state=42)
+        embeddings_2d = tsne.fit_transform(embeddings)
+        return embeddings_2d
 
 
 if __name__ == '__main__':
