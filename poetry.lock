@@ -1441,13 +1441,13 @@ test = ["pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)", "ypy-we
 
 [[package]]
 name = "jupyterlab"
-version = "3.6.4"
+version = "3.6.5"
 description = "JupyterLab computational environment"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "jupyterlab-3.6.4-py3-none-any.whl", hash = "sha256:8a4e495a096ae2315af2b07acaac9d38917b6927ebd891834ddf83b28f53e881"},
-    {file = "jupyterlab-3.6.4.tar.gz", hash = "sha256:862fb4a06c759a9b0a12de6bf434a8681a42e52fff0593c120e3fbad6847889f"},
+    {file = "jupyterlab-3.6.5-py3-none-any.whl", hash = "sha256:4d13665c2c2f42c753140d88b52ff8722cd5b38629b934f5612bfa5490bcdc65"},
+    {file = "jupyterlab-3.6.5.tar.gz", hash = "sha256:ac0cb19756be1d1e14b2be1f23c603de46e0f0113960fce9888889ca55ae8923"},
 ]
 
 [package.dependencies]
@@ -1619,8 +1619,8 @@ urllib3 = "^1.26.1"
 [package.source]
 type = "git"
 url = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git"
-reference = "a238ef79a36e85d971b5652e454ba413a449b019"
-resolved_reference = "a238ef79a36e85d971b5652e454ba413a449b019"
+reference = "cfd89898c103a614afc39fcb2d0eac740fe84306"
+resolved_reference = "cfd89898c103a614afc39fcb2d0eac740fe84306"
 
 [[package]]
 name = "markdown"
@@ -4189,4 +4189,4 @@ test = ["mypy", "pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "ce9546e29335b3616ffc01afd996af6d7e3cbc14f8dd8681df18abdcbd53ea31"
+content-hash = "53e9448c91dd430444e6511a827bf91647f136efc408ac2b49bde71ace9f7141"
