@@ -77,7 +77,22 @@ def embed_spacy_en_core_web_sm(texts: list[str]) -> EMBEDDINGS:
     return embeddings
 
 
+def embed_spacy_en_core_web_lg(texts: list[str]) -> EMBEDDINGS:
+    nlp = spacy.load('en_core_web_lg')
+    embeddings = np.array(list(map(lambda doc: doc.vector, nlp.pipe(texts))))
+    assert len(texts) == embeddings.shape[0], "Mismatched number of texts and embeddings."
+    return embeddings
+
+
 ARTIFACTS = namedtuple('ARTIFACT', ['dataframe', 'col_clazz', 'col_text', 'embeddings'])
+
+Clustering_Strategies = {
+    'kmeans': kmeans_cluster,
+}
+Embedding_Types = {
+    'spacy_en_core_web_sm': embed_spacy_en_core_web_sm,
+    'spacy_en_core_web_lg': embed_spacy_en_core_web_lg,
+}  # 'bert'
 
 
 class Sampler(object):
@@ -85,9 +100,9 @@ class Sampler(object):
     Embedding_Types = Embedding_Types
 
     def __init__(self, embedding_type: str, clustering_strategy: str, n_clusters: Optional[int] = None):
-        if not embedding_type in Embedding_Types:
+        if not embedding_type in Embedding_Types.keys():
             raise ValueError(f"embedding_type must be one of {', '.join(Embedding_Types)}")
-        if not clustering_strategy in Clustering_Strategies:
+        if not clustering_strategy in Clustering_Strategies.keys():
             raise ValueError(f"clustering_strategy must be one of {', '.join(Clustering_Strategies)}")
         if n_clusters is not None and not isinstance(n_clusters, int):
             raise TypeError("n_clusters must be an integer.")
@@ -108,8 +123,12 @@ class Sampler(object):
             print(f"Number of clusters: {self.n_clusters}")
             print(f"Embedding type: {self.embedding_type}")
 
-        emb_fn: Callable[[list[str]], EMBEDDINGS] = embed_spacy_en_core_web_sm
-        cluster_fn: Callable[[EMBEDDINGS, Any], CLUSTER_RESULTS] = kmeans_cluster
+        emb_fn: Callable[[list[str]], EMBEDDINGS] = \
+            self.Embedding_Types.get(self.embedding_type, None)
+        assert emb_fn is not None, f"No embedding function associated with {self.embedding_type}."
+        cluster_fn: Callable[[EMBEDDINGS, Any], CLUSTER_RESULTS] = \
+            self.Clustering_Strategies.get(self.clustering_strategy, None)
+        assert cluster_fn is not None, f"No clustering function associated with {self.clustering_strategy}."
 
         clazzes = list(df.loc[:, col_clazz].unique())
         if verbose: print(f"Classes: {', '.join(clazzes)}")
