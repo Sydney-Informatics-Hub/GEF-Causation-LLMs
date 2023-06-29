@@ -36,6 +36,9 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.manifold import TSNE
 import umap
 import plotly.graph_objects as go
+import plotly.subplots as sp
+from transformers import AutoTokenizer, AutoModel
+from tqdm.auto import tqdm
 
 __all__ = ['Sampler']
 
@@ -85,6 +88,22 @@ def embed_spacy_en_core_web_lg(texts: list[str]) -> EMBEDDINGS:
     return embeddings
 
 
+def embed_hf(model_name: str) -> Callable[[list[str]], EMBEDDINGS]:
+    model = AutoModel.from_pretrained(model_name)
+    tokeniser = AutoTokenizer.from_pretrained(model_name)
+
+    def embed(texts: list[str]) -> EMBEDDINGS:
+        embeddings = list()
+        for i in tqdm(range(len(texts)), total=len(texts)):
+            outputs = model(tokeniser.encode(texts[i], add_special_tokens=True, return_tensors='pt'))
+            embedding = outputs.last_hidden_state
+            embedding = embedding.sum(axis=1).detach().numpy() / embedding.shape[1]
+            embeddings.append(embedding.squeeze(0))
+        return np.array(embeddings)
+
+    return embed
+
+
 ARTIFACTS = namedtuple('ARTIFACT', ['dataframe', 'col_clazz', 'col_text', 'embeddings'])
 
 Clustering_Strategies = {
@@ -93,7 +112,8 @@ Clustering_Strategies = {
 Embedding_Types = {
     'spacy_en_core_web_sm': embed_spacy_en_core_web_sm,
     'spacy_en_core_web_lg': embed_spacy_en_core_web_lg,
-}  # 'bert'
+    'bert-base-uncased': embed_hf('bert-base-uncased')
+}
 
 
 class Sampler(object):
@@ -111,6 +131,7 @@ class Sampler(object):
         self.clustering_strategy = clustering_strategy
         self.n_clusters = n_clusters
         self.embedding_type = embedding_type
+        self._col_cluster = 'cluster'
 
         self.artifacts: Optional[ARTIFACTS] = None
 
@@ -134,7 +155,9 @@ class Sampler(object):
         clazzes = list(df.loc[:, col_clazz].unique())
         if verbose: print(f"Classes: {', '.join(clazzes)}")
 
+        if verbose: print("Generating embeddings...", end='')
         embeddings: EMBEDDINGS = emb_fn(df.loc[:, col_text].tolist())
+        if verbose: print("Done.", end='\n')
 
         # Generate clusters
         if verbose: print("Generating clusters...", end='')
@@ -146,7 +169,7 @@ class Sampler(object):
                                                          for cluster, indices in clusters.items()
                                                          for idx in indices]
 
-        cdf = pd.DataFrame(remapped_clusters, columns=['idx', 'cluster']).set_index(keys='idx')
+        cdf = pd.DataFrame(remapped_clusters, columns=['idx', self._col_cluster]).set_index(keys='idx')
         df = pd.concat([df, cdf], axis=1)
 
         # note: return class information, number of clusters, indices in each cluster, embeddings, dataframe.
@@ -239,23 +262,45 @@ class Sampler(object):
             compressed_2d = self.tsne(self.artifacts.embeddings)
         else: raise NotImplementedError(f"kind = {kind} is not supported. Only umap, tsne are.")
         # set up visualisation plot
+        cluster_labels = self.artifacts.dataframe.loc[:, self._col_cluster].to_list()
         labels = self.artifacts.dataframe.loc[:, self.artifacts.col_clazz].to_list()
-        lab_encodings = LabelEncoder().fit_transform(labels)
+        clazz_labels = LabelEncoder().fit_transform(labels)
+
         texts = self.artifacts.dataframe.loc[:, [self.artifacts.col_clazz, self.artifacts.col_text]].apply(
-            lambda row: f"[{row.clazz}] {row.sentence}", axis=1)
-        fig = go.Figure(data=go.Scatter(
+            lambda row: f"[{row.clazz}] {row.sentence}", axis=1
+        )
+
+        scatter_clazz = go.Scatter(
             x=compressed_2d[:, 0],
             y=compressed_2d[:, 1],
             mode='markers',
             marker=dict(
                 size=8,
-                color=lab_encodings,  # assign color to each label
+                color=clazz_labels,  # assign color to each label
                 colorscale='Viridis',  # choose a colorscale
                 opacity=0.8
             ),
             text=texts,
-        ))
-        fig.update_layout(autosize=False, width=800, height=800)
+            name='class'
+        )
+        scatter_cluster = go.Scatter(
+            x=compressed_2d[:, 0],
+            y=compressed_2d[:, 1],
+            mode='markers',
+            marker=dict(
+                size=8,
+                color=cluster_labels,  # assign color to each label
+                colorscale='solar',  # choose a colorscale
+                opacity=0.8
+            ),
+            text=texts,
+            name='clusters',
+        )
+        fig = sp.make_subplots(rows=1, cols=2)
+        # fig = go.Figure(data=[scatter_class, scatter_cluster])
+        fig.add_trace(scatter_clazz, row=1, col=1)
+        fig.add_trace(scatter_cluster, row=1, col=2)
+        fig.update_layout(autosize=False, width=1600, height=800)
         fig.show()
 
     @staticmethod
@@ -272,7 +317,8 @@ class Sampler(object):
 
 
 if __name__ == '__main__':
-    sampler = Sampler(clustering_strategy='kmeans', n_clusters=5, embedding_type='spacy_en_core_web_sm')
+    # sampler = Sampler(clustering_strategy='kmeans', n_clusters=5, embedding_type='spacy_en_core_web_sm')
+    sampler = Sampler(clustering_strategy='kmeans', n_clusters=5, embedding_type='bert-base-uncased')
 
     clazzes = [0, 1, 1, 1, 0, 0, 1, 0, 1, 1]
     texts = [
