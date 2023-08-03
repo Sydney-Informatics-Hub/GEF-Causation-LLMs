@@ -1,4 +1,6 @@
 # GEF Causation with LLMs
 
 Chain of Thought (Self Consistency): 
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs.git/e08b1b892446b5299934d3751851215471c4c9ef?labpath=causation-cotsc.ipynb)
+https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/66f41319c4aa19a7d9391550063131310669c31a?labpath=causation-cotsc.ipynb
+Chain of Thought (Bootstrap):
+https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/66f41319c4aa19a7d9391550063131310669c31a?labpath=causation-bootstrap.ipynb
