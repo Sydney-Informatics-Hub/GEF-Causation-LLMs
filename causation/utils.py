@@ -33,7 +33,7 @@ def fileuploader(ext: str) -> (pn.Row, dict):
 
 def openai_apikey_input():
     pn.extension()
-    password_input = pn.widgets.PasswordInput(name='Enter your OpenAI API key then run the next cell:',
+    password_input = pn.widgets.PasswordInput(name='Enter your OpenAI API Key (then press enter):',
                                               placeholder='<OpenAI API Key>')
 
     def _cb_overwrite_api(key: str):
