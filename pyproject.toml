@@ -19,6 +19,7 @@ en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/dow
 panel = "^1.1.0"
 plotly = "^5.15.0"
 ipywidgets = ">=7.6"        # required for plotly jupyterlab
+matplotlib = "^3.7.2"
 
 [tool.poetry.group.sampler.dependencies]
 numba = "^0.57.1"
