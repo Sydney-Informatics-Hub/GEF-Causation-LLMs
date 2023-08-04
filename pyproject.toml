@@ -9,7 +9,7 @@ packages = [{ include = "causation" }]
 [tool.poetry.dependencies]
 python = "^3.10"
 urllib3 = "^1.26.6"
-llm_experiments = { git = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git", rev = "54beb029ea923ec1eeb71c2a2c5fa5b88d08150e" }
+llm_experiments = { git = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git", rev = "a8d53a8f3ab26070eab2fc9649a999714f5e1108" }
 pandas = "^2.0.2"
 openai = "^0.27.8"
 openpyxl = "^3.1.2"
