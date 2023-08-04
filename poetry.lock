@@ -1737,8 +1737,8 @@ urllib3 = "^1.26.1"
 [package.source]
 type = "git"
 url = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git"
-reference = "27de08b59c0d322e7958cfb4bc5f8ee6e8bb7f76"
-resolved_reference = "27de08b59c0d322e7958cfb4bc5f8ee6e8bb7f76"
+reference = "54beb029ea923ec1eeb71c2a2c5fa5b88d08150e"
+resolved_reference = "54beb029ea923ec1eeb71c2a2c5fa5b88d08150e"
 
 [[package]]
 name = "llvmlite"
@@ -4789,4 +4789,4 @@ test = ["mypy", "pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2e221ee44e99a3639bb3569ee99a05d6e36cefbffb44accea9d48df8d0780e97"
+content-hash = "016a042fbf82b8cd574497048e518ecb22c2eccd8033fa3859b0e83dd6225fa6"
