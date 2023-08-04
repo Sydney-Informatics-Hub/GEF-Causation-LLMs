@@ -20,7 +20,8 @@ def fileuploader(ext: str) -> (pn.Row, dict):
 
     def _cb_save_to_file(fbytes: bytes, fname: str) -> MARKDOWN:
         if fbytes is None or len(fbytes) <= 0 or fname is None: return ""
-        dir_ = Path(mkdtemp())
+        # dir_ = Path(mkdtemp())
+        dir_ = Path(".")        # for binder, allow editing of uploaded file via lab interface.
         path = dir_.joinpath(fname)
         with open(path, 'wb') as h:
             h.write(finput.value)
