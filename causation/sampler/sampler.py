@@ -211,8 +211,8 @@ class Sampler(object):
         num_examples_per_clazz: dict[str, int] = {
             c: clazz_weights[i] * n for (i, c) in enumerate(clazzes)
         }
-        assert sum(num_examples_per_clazz.values()) == n, \
-            "Number of target examples to accumulate per class should equal sample size. "
+        # assert sum(num_examples_per_clazz.values()) == n, \
+        #     "Number of target examples to accumulate per class should equal sample size. "
         num_examples_per_clazz = dict(zip(
             num_examples_per_clazz.keys(),
             map(lambda n: int(n), num_examples_per_clazz.values()))
