@@ -1,8 +1,28 @@
 .venv
 .idea
+**/.DS_STORE
 
 .secrets
 **/.ipynb_checkpoints
 
 
 **/__pycache__
+
+# samples dir
+samples/
+
+# cotsc results dir
+results/
+# cotsc results cache dir
+.causation-cotsc-results/	
+
+# cotsc configs dir
+cotsc-tomls/
+
+# embeddings dir
+**/embeddings/
+
+
+**/*.zip
+
+**/*.toml
