@@ -8,7 +8,7 @@ import logging
 
 import openai
 import panel as pn
-from openai.error import AuthenticationError
+from openai.error import AuthenticationError, APIConnectionError
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ def openai_apikey_input():
 
     def _cb_overwrite_api(key: str):
         if len(key) == 0:
-            return "Please enter your OpenAI API key."
+            return "Please enter your OpenAI API Key (then press enter)."
         else:
             if len(key) == 51:
                 try:
@@ -54,10 +54,15 @@ def openai_apikey_input():
                     return "Valid API Key. Please continue."
                 except AuthenticationError as ae:
                     return str(ae)
+                except APIConnectionError as ace:
+                    logger.debug(ace)
+                    return "Something is wrong with your network connection. Please try again."
                 except Exception as e:
                     logger.debug(str(e))
                     return "Something went wrong when validating API Key. Please try again."
             return "Incorrect API key provided. Must be 51 characters."
 
-    iobject = pn.bind(_cb_overwrite_api, password_input.param.value, watch=False)
+    iobject = pn.bind(_cb_overwrite_api,
+                      password_input.param.value,
+                      watch=False)  # watch=False callback triggered with "Enter"
     return pn.Row(password_input, pn.pane.Markdown(iobject))
