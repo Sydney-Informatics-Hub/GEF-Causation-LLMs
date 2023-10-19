@@ -4,6 +4,7 @@ This contains the full classification widget.
 
 note: class name Controller is misleading - it does everything.
 """
+from collections import namedtuple
 from pathlib import Path
 from typing import Optional
 
@@ -138,18 +139,20 @@ class CoTPromptUpload(FileUploadToDir):
 
 
 class ModelConfig(object):
+    Config = namedtuple("Config", ['model', 'top_p', 'temperature'])
+
     def __init__(self):
         # model selector
         model = pn.widgets.Select(options=['gpt-3.5-turbo', 'gpt-3.5-turbo-16k'])
-        model_name_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+        model_name_ttip = pn.widgets.TooltipIcon(value="The GPT model to use.",
                                                  margin=(-33, -500, 20, -170))
         # top p slider
         top_p = pn.widgets.FloatSlider(name="Top p", start=0.1, end=1.0, step=0.1, value=0.8, tooltips=True)
-        top_p_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+        top_p_ttip = pn.widgets.TooltipIcon(value="Makes the answer more focused or more varied. Lower numbers stick closer to what's most likely, while higher numbers explore more options.",
                                             margin=(-43, -40, 30, -170))
         # temperature slider
         temp = pn.widgets.FloatSlider(name="Temperature", start=0.0, end=2.0, step=0.1, value=1.0, tooltips=False)
-        temp_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+        temp_ttip = pn.widgets.TooltipIcon(value="Changes how random the answer is. Lower numbers make it more predictable, while higher numbers add more surprise",
                                            margin=(-43, -120, 50, -170))
 
         mconfig = pn.Column("## Model Configuration",
@@ -175,6 +178,14 @@ class ModelConfig(object):
 
     def _cb_on_temp_slide(self, event):
         self._config['temperature'] = event.obj.value
+
+    def widget(self):
+        return self._widget
+
+    def get_config(self) -> Config:
+        return self.Config(model=self._config['model'],
+                           top_p=self._config['top_p'],
+                           temperature=self._config['temperature'])
 
 
 class Controller(object):
