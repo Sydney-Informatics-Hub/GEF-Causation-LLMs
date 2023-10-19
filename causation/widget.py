@@ -26,11 +26,6 @@ pn.config.design = Material
 MARKDOWN = str
 
 
-# model configuration pane
-
-
-# run classification button
-
 class FileUploadToDir(object):
     def __init__(self, ext: list[str], upload_dir: str):
         self._extensions = ext
@@ -140,6 +135,46 @@ class CoTPromptUpload(FileUploadToDir):
         return pn.Accordion(('class',
                              pn.Column(pn.pane.HTML(html_str.format(instructions=instructions).lstrip()),
                                        pn.pane.DataFrame(df, index=False, height=200, sizing_mode='stretch_width'))))
+
+
+class ModelConfig(object):
+    def __init__(self):
+        # model selector
+        model = pn.widgets.Select(options=['gpt-3.5-turbo', 'gpt-3.5-turbo-16k'])
+        model_name_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+                                                 margin=(-33, -500, 20, -170))
+        # top p slider
+        top_p = pn.widgets.FloatSlider(name="Top p", start=0.1, end=1.0, step=0.1, value=0.8, tooltips=True)
+        top_p_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+                                            margin=(-43, -40, 30, -170))
+        # temperature slider
+        temp = pn.widgets.FloatSlider(name="Temperature", start=0.0, end=2.0, step=0.1, value=1.0, tooltips=False)
+        temp_ttip = pn.widgets.TooltipIcon(value="This is a simple tooltip by using a string",
+                                           margin=(-43, -120, 50, -170))
+
+        mconfig = pn.Column("## Model Configuration",
+                            model, model_name_ttip,
+                            top_p, top_p_ttip,
+                            temp, temp_ttip)
+        self._widget = mconfig
+
+        self._config = dict(
+            model=model.value,
+            top_p=top_p.value,
+            temperature=temp.value
+        )
+        model.param.watch(self._cb_on_model_select, 'value')
+        top_p.param.watch(self._cb_on_top_p_slide, 'value')
+        temp.param.watch(self._cb_on_temp_slide, 'value')
+
+    def _cb_on_model_select(self, event):
+        self._config['model'] = event.obj.value
+
+    def _cb_on_top_p_slide(self, event):
+        self._config['top_p'] = event.obj.value
+
+    def _cb_on_temp_slide(self, event):
+        self._config['temperature'] = event.obj.value
 
 
 class Controller(object):
