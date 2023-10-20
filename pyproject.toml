@@ -20,6 +20,7 @@ panel = "^1.1.0"
 plotly = "^5.15.0"
 ipywidgets = ">=7.6"        # required for plotly jupyterlab
 matplotlib = "^3.7.2"
+tqdm = ">=4.65.0"
 
 [tool.poetry.group.sampler.dependencies]
 numba = "^0.57.1"
