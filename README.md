@@ -7,4 +7,4 @@ Chain of Thought (Bootstrap):
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/9d50b3dcf0b3e2cc20776e1d7ec0e2d990a67a42?labpath=causation-bootstrap.ipynb)
 
 Chain of Thought (Self Consistency) - Corpus classification:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/3f3ec4609bd07db26bee96f39e2596b488bf1c6d?labpath=causation-corpus.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/1e3eb45c91ea3f5100a21130dcd5e10621ba796d?labpath=causation-corpus.ipynb)
