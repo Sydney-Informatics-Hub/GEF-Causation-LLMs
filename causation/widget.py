@@ -143,17 +143,19 @@ class ModelConfig(object):
 
     def __init__(self):
         # model selector
-        model = pn.widgets.Select(options=['gpt-3.5-turbo', 'gpt-3.5-turbo-16k'])
+        model = pn.widgets.Select(options=self.available_models)
         model_name_ttip = pn.widgets.TooltipIcon(value="The GPT model to use.",
                                                  margin=(-33, -500, 20, -170))
         # top p slider
         top_p = pn.widgets.FloatSlider(name="Top p", start=0.1, end=1.0, step=0.1, value=0.8, tooltips=True)
-        top_p_ttip = pn.widgets.TooltipIcon(value="Makes the answer more focused or more varied. Lower numbers stick closer to what's most likely, while higher numbers explore more options.",
-                                            margin=(-43, -40, 30, -170))
+        top_p_ttip = pn.widgets.TooltipIcon(
+            value="Makes the answer more focused or more varied. Lower numbers stick closer to what's most likely, while higher numbers explore more options.",
+            margin=(-43, -40, 30, -170))
         # temperature slider
         temp = pn.widgets.FloatSlider(name="Temperature", start=0.0, end=2.0, step=0.1, value=1.0, tooltips=False)
-        temp_ttip = pn.widgets.TooltipIcon(value="Changes how random the answer is. Lower numbers make it more predictable, while higher numbers add more surprise",
-                                           margin=(-43, -120, 50, -170))
+        temp_ttip = pn.widgets.TooltipIcon(
+            value="Changes how random the answer is. Lower numbers make it more predictable, while higher numbers add more surprise",
+            margin=(-43, -120, 50, -170))
 
         mconfig = pn.Column("## Model Configuration",
                             model, model_name_ttip,
@@ -169,6 +171,10 @@ class ModelConfig(object):
         model.param.watch(self._cb_on_model_select, 'value')
         top_p.param.watch(self._cb_on_top_p_slide, 'value')
         temp.param.watch(self._cb_on_temp_slide, 'value')
+
+    @property
+    def available_models(self) -> list[str]:
+        return ['gpt-3.5-turbo', 'gpt-3.5-turbo-16k']
 
     def _cb_on_model_select(self, event):
         self._config['model'] = event.obj.value
@@ -188,5 +194,97 @@ class ModelConfig(object):
                            temperature=self._config['temperature'])
 
 
+from llm_experiments.cot import CoT, CoTSC
+from llm_experiments.cot.cot import CoTDataLeakException
+from llm_experiments.utils.tikdollar import CostThresholdReachedException
+
+
+class CoTSCWidget(object):
+    def __init__(self, promptupload: CoTPromptUpload, modelconfig: ModelConfig,):
+        self._classify_btn = pn.widgets.Button(name="Run classification", button_type='primary')
+        # todo: classify -> pop up confirmation pane, shuffle examples is done automatically.
+
+        cot: Optional[CoT] = None
+        self._cotsc: Optional[CoTSC] = None
+
+        self._sentences: pd.DataFrame = pd.DataFrame()
+
+        self._sent_widget = pn.widgets.DataFrame(self._sentences)
+        spacer = pn.layout.Spacer(width=10)
+        self._tqdm = pn.indicators.Tqdm(width=500)
+
+        self._widget = pn.Column(pn.Row(self.classify_btn, spacer, self._tqdm),
+                                 self._sent_widget,
+                                 sizing_mode='stretch_width')
+
+    @property
+    def classify_btn(self):
+        return self._classify_btn
+
+    def run_classification(self, sentences: pd.Series | list, checkpointing: bool | int):
+        if checkpointing is True: checkpointing = 200
+        cot: CoT = CoT.from_toml()
+        cotsc: CoTSC = CoTSC.from_cot(cot=cot)
+        sentences = pd.Series(sentences, name='sentence')
+
+        # todo: build votes, reason from toml
+        output_cols = []
+        for clazz in cotsc.classes:
+            output_cols.append(f"vote({clazz})")
+            output_cols.append(f"reason({clazz})")
+        output_cols.append('raw_output')
+
+        self._sentences = pd.DataFrame([sentences] + [None] * len(output_cols), columns=['sentence'] + output_cols)
+        dleak_counter = 0
+        for i, sent in enumerate(sentences):
+            try:
+                results = cotsc.run(query=sent)
+                for clazz, clz_results in results.items():
+                    vote_str = f"votes({clazz})"
+                    reason_str = f"reason({clazz})"
+                    self._sentences.loc[i, vote_str] = clz_results.get('votes')
+                    self._sentences.loc[i, reason_str] = clz_results.get('steps')
+                    self._sentences.loc[i, 'raw_output'] = clz_results.get('completions')
+
+            except CoTDataLeakException as cotdle:
+                # todo: make these prints alerts.
+                print(cotdle)
+                print("Data leak detected. Skipped.")
+                dleak_counter += 1
+                continue
+            except CostThresholdReachedException as ctre:
+                print(ctre)
+                print(f"Number of queries sent: {i}.")
+                break
+            except Exception as e:
+                print(e)
+
+            if checkpointing and (i + 1) % checkpointing == 0:
+                print(f"Checkpointed at {i + 1} queries processed.")
+                self._sentences.to_excel(f'./cotsc-outputs-checkpoint-{i + 1}.xlsx')
+
+    def widget(self):
+        return self._widget
+
+
 class Controller(object):
-    pass
+    def __init__(self, col_sentence: str, upload_dir: str):
+        self._model_config = ModelConfig()
+        self._dataset_tab = DatasetUpload(required_cols=[col_sentence], upload_dir=upload_dir)
+        self._prompt_tab = CoTPromptUpload(upload_dir=upload_dir)
+        self._cotscw = CoTSCWidget()
+        self._tabs = pn.layout.Tabs(
+            ("Prompt", self._prompt_tab.widget()),
+            ("Dataset", self._dataset_tab.widget()),
+            # todo: perhaps add a dataset summary pane here. + mv col_sentence to first col and expand width
+            ("Classification", self._cotscw.widget())
+        )
+
+        self._left_pane = pn.layout.Column(
+            self._model_config.widget(),
+        )
+
+        self._widget = pn.layout.Row(self._left_pane, pn.layout.Spacer(width=20), self._tabs)
+
+    def widget(self):
+        return self._widget
