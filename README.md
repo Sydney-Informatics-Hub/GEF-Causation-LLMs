@@ -8,3 +8,6 @@ Chain of Thought (Bootstrap):
 
 Chain of Thought (Self Consistency) - Corpus classification:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/58cc2fe5821d18b8181ce28221e5a17d9f4f463d?labpath=causation-corpus.ipynb)
+
+Baselines (Naive Bayes, Random Forest):
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/7c01dc9a7a16da69faa14af2b8897b4d5426149e?labpath=baseline_nb_rf.ipynb)
