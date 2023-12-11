@@ -9,7 +9,7 @@ packages = [{ include = "causation" }]
 [tool.poetry.dependencies]
 python = "^3.10"
 urllib3 = "^1.26.6"
-llm_experiments = { git = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git", rev = "febbed2c755eee00be7e4a40b4b7f8b74056767c" }
+llm_experiments = { git = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git", rev = "67d427af75917c69d9d54951069d2c5f4213dc60" }
 pandas = "^2.0.2"
 openai = "^0.27.8"
 openpyxl = "^3.1.2"
@@ -31,6 +31,7 @@ torch = "^2.0.1"
 [tool.poetry.group.dev.dependencies]
 jupyterlab = "<4.0"
 jupyterlab-vim = "^0.16.0"
+nbdime = "^4.0.1"
 
 
 [build-system]
