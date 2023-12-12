@@ -10,7 +10,7 @@ Chain of Thought (Self Consistency) - Corpus classification:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/bdee99a9eb2c6b2d21397ab34904e7406182886f?labpath=causation-corpus.ipynb)
 
 GPT-Turbo-3.5 Zeroshot:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/2f28a5bb15c0ab9bdddfcf08c21efa0823885477?labpath=causation-zeroshot.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/adca3fca90fe861040eba666cb13346f462f258e?labpath=causation-zeroshot.ipynb)
 
 
 Baselines (Naive Bayes, Random Forest):
