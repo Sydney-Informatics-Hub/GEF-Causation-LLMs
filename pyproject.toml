@@ -7,7 +7,7 @@ license = "MIT"
 packages = [{ include = "causation" }]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
 urllib3 = "^1.26.6"
 llm_experiments = { git = "https://github.com/Sydney-Informatics-Hub/llm-experiments.git", rev = "8328ba3d0a848732327e8e9341f1bde841351bc0" }
 pandas = "^2.0.2"
@@ -21,6 +21,7 @@ plotly = "^5.15.0"
 ipywidgets = ">=7.6"        # required for plotly jupyterlab
 matplotlib = "^3.7.2"
 tqdm = ">=4.65.0"
+atap-corpus = "^0.1.9"
 
 [tool.poetry.group.sampler.dependencies]
 numba = "^0.57.1"
