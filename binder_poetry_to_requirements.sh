@@ -8,6 +8,7 @@ echo "A new temporary virtual environment will be created and subsequently delet
 VENV_DIR='./.venv-poetry-to-requirements'
 POETRY_FILE="./pyproject.toml"
 REQ_FILE='./requirements.txt'
+RT_FILE='./runtime.txt'
 
 if [[ ! -f $POETRY_FILE ]]; then
   echo "-- $POETRY_FILE not found. Exited."
@@ -19,6 +20,13 @@ if [[ -f $REQ_FILE ]]; then
   read x
   [[ $x != 'y' ]] && echo "Exited." && exit 0
   rm -rf $REQ_FILE
+fi
+
+if [[ -f $RT_FILE ]]; then
+  printf "-- $RT_FILE exist. Replace? (y/n): "
+  read x
+  [[ $x != 'y' ]] && echo "Exited." && exit 0
+  rm -rf $RT_FILE
 fi
 
 if [[ -d $VENV_DIR ]]; then
@@ -42,6 +50,13 @@ poetry install --without=dev --without=sampler # note no extras are installed. (
 
 echo "++ Exporting poetry dependencies to $REQ_FILE..."
 poetry export --without-hashes --without dev --format=requirements.txt > $REQ_FILE
+
+echo "++ Generating $RT_FILE..."
+version=$(python3 --version | awk '{print $2}')
+major=${version%%.*} # Extracts '3'
+minor=${version#*.}  # Removes '3.', resulting in '10.11'
+minor=${minor%%.*}   # Extracts '10' from '10.11'
+echo "python-${major}.${minor}" > $RT_FILE
 
 echo "++ Cleaning up..."
 rm -rf $VENV_DIR
