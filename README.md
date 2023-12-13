@@ -10,8 +10,18 @@ Chain of Thought (Self Consistency) - Corpus classification:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/bdee99a9eb2c6b2d21397ab34904e7406182886f?labpath=causation-corpus.ipynb)
 
 GPT-Turbo-3.5 Zeroshot:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/adca3fca90fe861040eba666cb13346f462f258e?labpath=causation-zeroshot.ipynb)
-
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/18a6b683e60b3b2948846fded738c44dcb1337da?labpath=causation-zeroshot.ipynb)
 
 Baselines (Naive Bayes, Random Forest):
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/7c01dc9a7a16da69faa14af2b8897b4d5426149e?labpath=baselines_nb_rf.ipynb)
+
+
+## Final Notebooks
+Zero-shot:
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-zeroshot.ipynb)
+
+Few-shot (standard):
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-fewshot-standard.ipynb)
+
+Few-shot (sequenced):
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-fewshot-sequenced.ipynb)
