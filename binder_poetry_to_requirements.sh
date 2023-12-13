@@ -56,6 +56,10 @@ version=$(python3 --version | awk '{print $2}')
 major=${version%%.*} # Extracts '3'
 minor=${version#*.}  # Removes '3.', resulting in '10.11'
 minor=${minor%%.*}   # Extracts '10' from '10.11'
+if (( $minor > 10 )); then
+  echo "-- Binder currently only supports up to python3.10. Downgraded to 3.10 from $major.$minor"  # 12.Dec.23
+  minor=10
+fi
 echo "python-${major}.${minor}" > $RT_FILE
 
 echo "++ Cleaning up..."
