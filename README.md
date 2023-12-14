@@ -18,10 +18,10 @@ Baselines (Naive Bayes, Random Forest):
 
 ## Final Notebooks
 Zero-shot:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-zeroshot.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/7758d392384d16cbc936c95797ffa9bfb3e14aa4?labpath=causation-zeroshot.ipynb)
 
 Few-shot (standard):
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-fewshot-standard.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/7758d392384d16cbc936c95797ffa9bfb3e14aa4?labpath=causation-fewshot-standard.ipynb)
 
 Few-shot (sequenced):
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/27b151cc8b8c288e8cf6eddc1eee6fced8e6eaac?labpath=notebooks%2Fcausation-fewshot-sequenced.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/7758d392384d16cbc936c95797ffa9bfb3e14aa4?labpath=causation-fewshot-sequenced.ipynb)
