@@ -22,3 +22,6 @@ Zero-shot:
 
 Few-shot:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/bce2d930697f7c3bb4e669f9635292b4a7611a44?labpath=causation-fewshot.ipynb)
+
+Baseline Naive Bayes:
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs.git/1d33989e5f102041e3c33deed5a473a315184970?labpath=baseline_nb.ipynb)
