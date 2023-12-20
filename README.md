@@ -21,7 +21,10 @@ Zero-shot:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/e67c4dbb994fe633305e4819764b5eff0b0ff473?labpath=causation-zeroshot.ipynb)
 
 Few-shot:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/bce2d930697f7c3bb4e669f9635292b4a7611a44?labpath=causation-fewshot.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/3e6e61f43f7d476f219c96428922406ece2948d1?labpath=causation-fewshot.ipynb)
 
 Baseline Naive Bayes:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/bb583a848a3440e72ae1ff36ebb0eb447033bb99?labpath=baseline_nb.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/3e6e61f43f7d476f219c96428922406ece2948d1?labpath=baseline_nb.ipynb)
+
+Baseline Random Forest:
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/3e6e61f43f7d476f219c96428922406ece2948d1?labpath=baseline_rf.ipynb)
