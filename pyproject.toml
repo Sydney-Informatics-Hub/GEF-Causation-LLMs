@@ -21,7 +21,7 @@ plotly = "^5.15.0"
 ipywidgets = ">=7.6"        # required for plotly jupyterlab
 matplotlib = "^3.7.2"
 tqdm = ">=4.65.0"
-atap-corpus = { git = "https://github.com/Sydney-Informatics-Hub/atap_corpus.git", rev = "f558b400829fad3a52f6aab284af511157b80f81" }
+atap-corpus = "^0.1.10"
 
 [tool.poetry.group.sampler.dependencies]
 numba = "^0.57.1"

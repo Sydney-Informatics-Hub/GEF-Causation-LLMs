@@ -279,31 +279,27 @@ name = "atap-corpus"
 version = "0.1.10"
 description = "Corpus mini-framework allowing for memory-efficient slicing and provides a standardised base corpus structure for the collection of ATAP tools. "
 optional = false
-python-versions = ">=3.10, <3.13"
-files = []
-develop = false
+python-versions = ">=3.10,<3.13"
+files = [
+    {file = "atap_corpus-0.1.10-py3-none-any.whl", hash = "sha256:df3589a02017fefa9b18438e36085b9d84108aed3acc3e0866b7503112b0e2b4"},
+    {file = "atap_corpus-0.1.10.tar.gz", hash = "sha256:b507c845e6669df8015b0b3901c27b96bc60a26c6c66a5d281b297800b9d1f1f"},
+]
 
 [package.dependencies]
-chardet = "^5.0.0"
-colorlog = "^6.7.0"
-coolname = "^2.2.0"
-openpyxl = "^3.1.1"
+chardet = ">=5.0.0,<6.0.0"
+colorlog = ">=6.7.0,<7.0.0"
+coolname = ">=2.2.0,<3.0.0"
+openpyxl = ">=3.1.1,<4.0.0"
 pandas = {version = ">=2.1", extras = ["excel", "parquet", "performance"]}
 pyarrow = ">=14.0.1"
 scikit-learn = ">=1.1.1"
 scipy = ">=1.11"
-spacy = "^v3.4.1"
-tqdm = "^4.64.0"
+spacy = ">=v3.4.1,<4.0.0"
+tqdm = ">=4.64.0,<5.0.0"
 
 [package.extras]
 apple = ["thinc-apple-ops[apple] (>=0.1.0,<0.2.0)", "urllib3 (>=1.26.18,<2.0.0)"]
 viz = ["ipywidgets (>=7.7.2,<8.0.0)", "matplotlib (>=3.5.2,<4.0.0)", "panel (>=1.2.3,<2.0.0)", "plotly (>=5.11.0,<6.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/Sydney-Informatics-Hub/atap_corpus.git"
-reference = "f558b400829fad3a52f6aab284af511157b80f81"
-resolved_reference = "f558b400829fad3a52f6aab284af511157b80f81"
 
 [[package]]
 name = "attrs"
@@ -5830,4 +5826,4 @@ test = ["mypy", "pre-commit", "pytest", "pytest-asyncio", "websockets (>=10.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.13"
-content-hash = "67b014b48d0f71140b4e391567fdf05c57c8103dc699967d2b09a9cc03a05152"
+content-hash = "980b4a710916ff0bc7fd2c638f3fb93dd3d9741a465f286972e00849d2d16660"
