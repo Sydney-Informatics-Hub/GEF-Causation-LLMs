@@ -22,6 +22,8 @@ ipywidgets = ">=7.6"        # required for plotly jupyterlab
 matplotlib = "^3.7.2"
 tqdm = ">=4.65.0"
 atap-corpus = "^0.1.10"
+transformers = {extras = ["torch"], version = "^4.29.0"}
+evaluate = "^0.4.1"
 
 [tool.poetry.group.sampler.dependencies]
 numba = "^0.57.1"
