@@ -7,7 +7,7 @@ Few-shot:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/e767d97d585194f574560ddc3cb4dca0524cd22e?labpath=causation-fewshot.ipynb)
 
 Baseline Naive Bayes:
-[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/c3cd3bca014faf995c992db0fbd140af6dbfddd8?labpath=baseline_nb.ipynb)
+[![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/a4b9c29eee8f58af2a61c1c01e8347a87f13abd9?labpath=baseline_nb.ipynb)
 
 Baseline Random Forest:
 [![Binder](https://binderhub.atap-binder.cloud.edu.au/badge_logo.svg)](https://binderhub.atap-binder.cloud.edu.au/v2/gh/Sydney-Informatics-Hub/GEF-Causation-LLMs/3e6e61f43f7d476f219c96428922406ece2948d1?labpath=baseline_rf.ipynb)
